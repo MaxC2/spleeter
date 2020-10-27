@@ -66,33 +66,33 @@ fileArrayOther=("${fileArray[@]/%//other.wav}")
 printf "file '%s'\n" "${fileArrayVocals[@]}" > concat-list.txt
 
 # concatenate the parts and convert the result to $EXT
-ffmpeg -f concat -safe 0 -i concat-list.txt -c copy separated/"$NAME"/vocals.wav
-ffmpeg -i separated/"$NAME"/vocals.wav separated/"$NAME"/vocals.$EXT
+ffmpeg -f concat -safe 0 -i concat-list.txt -c copy "$NAME"/vocals.wav
+ffmpeg -i "$NAME"/vocals.wav "$NAME"/vocals.$EXT
 
 # repeat for the other stems
 # drums
 printf "file '%s'\n" "${fileArrayDrums[@]}" > concat-list.txt
-ffmpeg -f concat -safe 0 -i concat-list.txt -c copy separated/"$NAME"/drums.wav
-ffmpeg -i separated/"$NAME"/drums.wav separated/"$NAME"/drums.$EXT
+ffmpeg -f concat -safe 0 -i concat-list.txt -c copy "$NAME"/drums.wav
+ffmpeg -i "$NAME"/drums.wav "$NAME"/drums.$EXT
 # bass
 printf "file '%s'\n" "${fileArrayBass[@]}" > concat-list.txt
-ffmpeg -f concat -safe 0 -i concat-list.txt -c copy separated/"$NAME"/bass.wav
-ffmpeg -i separated/"$NAME"/bass.wav separated/"$NAME"/bass.$EXT
+ffmpeg -f concat -safe 0 -i concat-list.txt -c copy "$NAME"/bass.wav
+ffmpeg -i "$NAME"/bass.wav "$NAME"/bass.$EXT
 # piano
 printf "file '%s'\n" "${fileArrayPiano[@]}" > concat-list.txt
-ffmpeg -f concat -safe 0 -i concat-list.txt -c copy separated/"$NAME"/piano.wav
-ffmpeg -i separated/"$NAME"/piano.wav separated/"$NAME"/piano.$EXT
+ffmpeg -f concat -safe 0 -i concat-list.txt -c copy "$NAME"/piano.wav
+ffmpeg -i "$NAME"/piano.wav "$NAME"/piano.$EXT
 # other
 printf "file '%s'\n" "${fileArrayOther[@]}" > concat-list.txt
-ffmpeg -f concat -safe 0 -i concat-list.txt -c copy separated/"$NAME"/other.wav
-ffmpeg -i separated/"$NAME"/other.wav separated/"$NAME"/other.$EXT
+ffmpeg -f concat -safe 0 -i concat-list.txt -c copy "$NAME"/other.wav
+ffmpeg -i "$NAME"/other.wav "$NAME"/other.$EXT
 
 # clean up
-rm separated/"$NAME"/vocals.wav
-rm separated/"$NAME"/drums.wav
-rm separated/"$NAME"/bass.wav
-rm separated/"$NAME"/piano.wav
-rm separated/"$NAME"/other.wav
+rm "$NAME"/vocals.wav
+rm "$NAME"/drums.wav
+rm "$NAME"/bass.wav
+rm "$NAME"/piano.wav
+rm "$NAME"/other.wav
 rm concat-list.txt
 OLDIFS=$IFS
 IFS=$'\n'
