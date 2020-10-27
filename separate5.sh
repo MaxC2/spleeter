@@ -22,32 +22,34 @@
 # source ~/miniconda3/etc/profile.d/conda.sh
 # conda activate
 
-FILE="$1"
+DIR="$1"
+FILE="$2"
  
 # failsafe - exit if no file is provided as argument
+[ "$DIR" == "" ] && exit
 [ "$FILE" == "" ] && exit
 
 NAME="${FILE%.*}"
 EXT=$(printf "$FILE" | awk -F . '{print $NF}')
 
 # split the audio file in 30s parts
-ffmpeg -i "$FILE" -f segment -segment_time 30 -c copy "$NAME"-%03d.$EXT
+ffmpeg -i "$FILE" -f segment -segment_time 30 -c copy "$DIR"/"$NAME"-%03d.$EXT
 
 # do the separation on the parts
 spleeter separate -i "$NAME"-* -p spleeter:5stems -m -B tensorflow -o separated
 
 # create output folder
-mkdir -p separated/"$NAME"
+mkdir -p "$DIR"/"separated/"$NAME"
 
 # save and change IFS
 OLDIFS=$IFS
 IFS=$'\n'
 
 # read all file name into an array (without .mp3/wav/... extension)
-fileArray=($(find $NAME-* -type f | sed 's/\.[^.]*$//'))
+fileArray=($(find $DIR/$NAME-* -type f | sed 's/\.[^.]*$//'))
 
 # keep a copy of the array for cleanup later
-fileArrayOrig=($(find $NAME-* -type f | sed 's/\.[^.]*$//'))
+fileArrayOrig=($(find $DIR/$NAME-* -type f | sed 's/\.[^.]*$//'))
 
 # prepend separated/ to each array element
 fileArray=("${fileArray[@]/#/separated/}")
@@ -66,33 +68,33 @@ fileArrayOther=("${fileArray[@]/%//other.wav}")
 printf "file '%s'\n" "${fileArrayVocals[@]}" > concat-list.txt
 
 # concatenate the parts and convert the result to $EXT
-ffmpeg -f concat -safe 0 -i concat-list.txt -c copy "$NAME"/vocals.wav
-ffmpeg -i "$NAME"/vocals.wav "$NAME"/vocals.$EXT
+ffmpeg -f concat -safe 0 -i concat-list.txt -c copy "$DIR"/"$NAME"/vocals.wav
+ffmpeg -i "$DIR"/"$NAME"/vocals.wav "$DIR"/"$NAME"/vocals.$EXT
 
 # repeat for the other stems
 # drums
 printf "file '%s'\n" "${fileArrayDrums[@]}" > concat-list.txt
-ffmpeg -f concat -safe 0 -i concat-list.txt -c copy "$NAME"/drums.wav
-ffmpeg -i "$NAME"/drums.wav "$NAME"/drums.$EXT
+ffmpeg -f concat -safe 0 -i concat-list.txt -c copy "$DIR"/"$NAME"/drums.wav
+ffmpeg -i "$DIR"/"$NAME"/drums.wav "$DIR"/"$NAME"/drums.$EXT
 # bass
 printf "file '%s'\n" "${fileArrayBass[@]}" > concat-list.txt
-ffmpeg -f concat -safe 0 -i concat-list.txt -c copy "$NAME"/bass.wav
-ffmpeg -i "$NAME"/bass.wav "$NAME"/bass.$EXT
+ffmpeg -f concat -safe 0 -i concat-list.txt -c copy "$DIR"/"$NAME"/bass.wav
+ffmpeg -i "$DIR"/"$NAME"/bass.wav "$DIR"/"$NAME"/bass.$EXT
 # piano
 printf "file '%s'\n" "${fileArrayPiano[@]}" > concat-list.txt
-ffmpeg -f concat -safe 0 -i concat-list.txt -c copy "$NAME"/piano.wav
-ffmpeg -i "$NAME"/piano.wav "$NAME"/piano.$EXT
+ffmpeg -f concat -safe 0 -i concat-list.txt -c copy "$DIR"/"$NAME"/piano.wav
+ffmpeg -i "$DIR"/"$NAME"/piano.wav "$DIR"/"$NAME"/piano.$EXT
 # other
 printf "file '%s'\n" "${fileArrayOther[@]}" > concat-list.txt
-ffmpeg -f concat -safe 0 -i concat-list.txt -c copy "$NAME"/other.wav
-ffmpeg -i "$NAME"/other.wav "$NAME"/other.$EXT
+ffmpeg -f concat -safe 0 -i concat-list.txt -c copy "$DIR"/"$NAME"/other.wav
+ffmpeg -i "$DIR"/"$NAME"/other.wav "$DIR"/"$NAME"/other.$EXT
 
 # clean up
-rm "$NAME"/vocals.wav
-rm "$NAME"/drums.wav
-rm "$NAME"/bass.wav
-rm "$NAME"/piano.wav
-rm "$NAME"/other.wav
+rm "$DIR"/"$NAME"/vocals.wav
+rm "$DIR"/"$NAME"/drums.wav
+rm "$DIR"/"$NAME"/bass.wav
+rm "$DIR"/"$NAME"/piano.wav
+rm "$DIR"/"$NAME"/other.wav
 rm concat-list.txt
 OLDIFS=$IFS
 IFS=$'\n'
@@ -100,7 +102,7 @@ rm -r $(printf "%s\n" "${fileArray[@]}")
 IFS=$OLDIFS
 
 # clean up
-rm "$NAME"-*
+rm "$DIR"/"$NAME"-*
 
 # deactivate (mini)conda
 # conda deactivate
