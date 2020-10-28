@@ -22,7 +22,10 @@
 # source ~/miniconda3/etc/profile.d/conda.sh
 # conda activate
 
-FILE="$1"
+#FILE="$1"
+GOOGLEFILE="$1"
+cp "$GOOGLEFILE" /content/spleeter
+FILE="${GOOGLEFILE##*/}"
  
 # failsafe - exit if no file is provided as argument
 [ "$FILE" == "" ] && exit
@@ -34,7 +37,7 @@ EXT=$(printf "$FILE" | awk -F . '{print $NF}')
 ffmpeg -i "$FILE" -f segment -segment_time 30 -c copy "$NAME"-%03d.$EXT
 
 # do the separation on the parts
-spleeter separate -i "$NAME"-* -p spleeter:4stems -m -B tensorflow -o separated
+spleeter separate -i "$NAME"-* -p spleeter:4stems-16kHz --mwf -B tensorflow -o separated
 
 # create output folder
 mkdir -p separated/"$NAME"
@@ -95,6 +98,9 @@ IFS=$OLDIFS
 
 # clean up
 rm "$NAME"-*
+
+# copy to google drive
+cp -r separated/"$NAME"/ "/content/gdrive/My Drive/output4/"
 
 # deactivate (mini)conda
 # conda deactivate
