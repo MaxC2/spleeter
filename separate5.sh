@@ -106,7 +106,7 @@ IFS=$OLDIFS
 rm "$NAME"-*
 
 # copy to google drive
-cp separated/"$NAME"/ "/content/gdrive/My Drive/output5/"
+cp -r separated/"$NAME"/ "/content/gdrive/My Drive/output5/"
 
 # deactivate (mini)conda
 # conda deactivate
