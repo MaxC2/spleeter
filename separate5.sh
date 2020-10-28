@@ -37,7 +37,7 @@ EXT=$(printf "$FILE" | awk -F . '{print $NF}')
 ffmpeg -i "$FILE" -f segment -segment_time 30 -c copy "$NAME"-%03d.$EXT
 
 # do the separation on the parts
-spleeter separate -i "$NAME"-* -p spleeter:5stems-16kHz -m -B tensorflow -o separated
+spleeter separate -i "$NAME"-* -p spleeter:5stems-16kHz --mwf -B tensorflow -o separated
 
 # create output folder
 mkdir -p separated/"$NAME"
