@@ -22,7 +22,12 @@
 # source ~/miniconda3/etc/profile.d/conda.sh
 # conda activate
 
-FILE="$1"
+GOOGLEFILE="$1"
+cp "$GOOGLEFILE" /content/spleeter
+FILE="${GOOGLEFILE##*/}"
+#printf "$FILE"
+#exit
+#FILE="$1"
  
 # failsafe - exit if no file is provided as argument
 [ "$FILE" == "" ] && exit
@@ -101,6 +106,9 @@ IFS=$OLDIFS
 
 # clean up
 rm "$NAME"-*
+
+# copy to google drive
+cp separated/"$NAME" "/content/gdrive/My Drive/output5"
 
 # deactivate (mini)conda
 # conda deactivate
